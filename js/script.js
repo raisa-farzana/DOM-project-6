@@ -1,11 +1,18 @@
 const getWeather = () => {
 
-    const city = document.getElementById('cityInput').value;
+    const city = document.getElementById('cityInput').value.trim();
     const apiKey = '3468a68ae69b3cf3e5055fe1232e6444';
-    const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}`;
+    const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
 
     fetch(apiUrl)
-    .then(res => res.json())
+    // .then(response => response.json())
+    .then(response => {
+        if(!response.ok) {
+            throw new Error('City Not Found');
+        }
+        return response.json();
+    })
+
     .then(data => {
         const weatherInfo = document.getElementById('weatherInfo');
 
@@ -16,10 +23,14 @@ const getWeather = () => {
 
         weatherInfo.innerHTML = `
             <p> Description: ${description} </p>
-            <h4> Temperature: ${temperature} </h4>
-            <p> Humidity: ${humidity} </p>
-            <p> wind Speed: ${wind} </p>
+            <h4> Temperature: ${temperature} &#8451 </h4>
+            <p> Humidity: ${humidity} % </p>
+            <p> wind Speed: ${wind} m/s </p>
 
         `;
+    })
+    .catch(error => {
+        console.error('Opps!, Sorry', error);
+        document.getElementById('weatherInfo').textContent = error.message;
     })
 }
